@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro';
 import { create } from 'zustand';
 import type { Book, UrgePost, NotifyItem, UserInfo, BookStatus } from '@/types';
-import { mockBooks, mockUrgePosts, mockNotifies, mockUser } from '@/data/mock';
+import { mockBooks, mockUrgePosts, mockNotifies, mockUser, generateRecentChapters } from '@/data/mock';
 import { getBookStatus } from '@/utils';
 
 const STORAGE_KEY = 'zhuiGengApp';
@@ -37,7 +37,13 @@ const savePersisted = (state: PersistedState) => {
 };
 
 const persisted = loadPersisted();
-const initialBooks = persisted ? persisted.books.map((b) => ({ ...b, status: getBookStatus(b.lastChapterAt) })) : mockBooks;
+const initialBooks = persisted
+  ? persisted.books.map((b) => ({
+      ...b,
+      status: getBookStatus(b.lastChapterAt),
+      recentChapters: (!b.recentChapters || b.recentChapters.length === 0) ? generateRecentChapters(b) : b.recentChapters
+    }))
+  : mockBooks;
 const initialUrgePosts = persisted ? persisted.urgePosts : mockUrgePosts;
 const initialNotifies = persisted ? persisted.notifies : mockNotifies;
 const initialUser = persisted ? persisted.user : mockUser;
@@ -192,7 +198,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   refreshBookStatus: () => {
     set((state) => {
       const newState = {
-        books: state.books.map((b) => ({ ...b, status: getBookStatus(b.lastChapterAt) }))
+        books: state.books.map((b) => ({
+          ...b,
+          status: getBookStatus(b.lastChapterAt),
+          recentChapters: (!b.recentChapters || b.recentChapters.length === 0) ? generateRecentChapters(b) : b.recentChapters
+        }))
       };
       persistState({ ...state, ...newState });
       return newState;

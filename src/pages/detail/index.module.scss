@@ -456,6 +456,125 @@
   box-shadow: $shadow-card;
 }
 
+.overdueBar {
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-radius: $radius-md;
+  border: 2rpx solid #F59E0B;
+}
+
+.overdueLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.overdueEmoji {
+  font-size: 40rpx;
+}
+
+.overdueTitle {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #92400E;
+  margin-bottom: 4rpx;
+}
+
+.overdueDesc {
+  font-size: $font-size-xs;
+  color: #B45309;
+}
+
+.overdueBtns {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.overdueBtn {
+  @include button-reset;
+  flex: 1;
+  padding: 14rpx 0;
+  height: 64rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.overdueBtnPrimary {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(249, 115, 22, 0.3);
+}
+
+.overdueBtnGhost {
+  background: rgba(255, 255, 255, 0.7);
+  color: #92400E;
+  border: 2rpx solid #D97706;
+}
+
+.predictCard {
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  border-radius: $radius-md;
+  border: 2rpx solid #DDD6FE;
+}
+
+.predictRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.predictEmoji {
+  font-size: 44rpx;
+}
+
+.predictContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.predictTitle {
+  display: block;
+  font-size: $font-size-xs;
+  color: #6D28D9;
+  margin-bottom: 4rpx;
+  font-weight: $font-weight-medium;
+}
+
+.predictWindow {
+  font-size: $font-size-sm;
+  color: #4C1D95;
+  font-weight: $font-weight-semibold;
+}
+
+.predictConfidence {
+  padding: 8rpx 20rpx;
+  border-radius: 40rpx;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  background: #7C3AED;
+  color: $color-text-white;
+}
+
+.predictHigh {
+  background: #059669;
+  color: $color-text-white;
+}
+
+.predictLow {
+  background: #9CA3AF;
+  color: $color-text-white;
+}
+
 .rhythmCard {
   padding: $spacing-md;
   margin-bottom: $spacing-md;

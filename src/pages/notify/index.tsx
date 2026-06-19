@@ -4,7 +4,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { NotifyItem, Book } from '@/types';
 import { useAppStore } from '@/store';
-import { shouldShowNotify, formatTimeAgo, formatWords } from '@/utils';
+import { shouldShowNotify, formatTimeAgo, formatWords, formatNumber, generateBookReviewTrends, type BookReviewTrend } from '@/utils';
 import NotifyCard from '@/components/NotifyCard';
 import styles from './index.module.scss';
 
@@ -17,6 +17,7 @@ const NotifyPage: React.FC = () => {
 
   const [filter, setFilter] = useState<FilterType>('all');
   const [selectedBookId, setSelectedBookId] = useState<string | 'all'>('all');
+  const [showReview, setShowReview] = useState(false);
 
   const bookReminderMap = useMemo(() => {
     const map: Record<string, Book['reminder']> = {};
@@ -86,6 +87,22 @@ const NotifyPage: React.FC = () => {
     return { book, unread, urgeReached, totalWords, latest, total: list.length };
   }, [visibleNotifies, selectedBookId, books]);
 
+  const reviewTrends = useMemo<BookReviewTrend[]>(
+    () => generateBookReviewTrends(books, visibleNotifies),
+    [books, visibleNotifies]
+  );
+
+  const handleDayClick = (trend: BookReviewTrend, _dayDate: string) => {
+    setSelectedBookId(trend.bookId);
+    setFilter('all');
+    setShowReview(false);
+    Taro.showToast({ title: `已定位到 ${trend.bookTitle}`, icon: 'none' });
+  };
+
+  const handleTrendBookClick = (trend: BookReviewTrend) => {
+    Taro.navigateTo({ url: `/pages/detail/index?id=${trend.bookId}` });
+  };
+
   usePullDownRefresh(() => {
     setTimeout(() => {
       Taro.stopPullDownRefresh();
@@ -111,16 +128,27 @@ const NotifyPage: React.FC = () => {
               </View>
             )}
           </View>
-          <Button
-            className={classnames(
-              styles.markAllBtn,
-              unreadCount === 0 && styles.disabled
-            )}
-            onClick={handleMarkAll}
-            disabled={unreadCount === 0}
-          >
-            全部已读
-          </Button>
+          <View className={styles.headerRight}>
+            <Button
+              className={classnames(
+                styles.reviewToggleBtn,
+                showReview && styles.reviewToggleBtnActive
+              )}
+              onClick={() => setShowReview(!showReview)}
+            >
+              📊 {showReview ? '收起' : '复盘'}
+            </Button>
+            <Button
+              className={classnames(
+                styles.markAllBtn,
+                unreadCount === 0 && styles.disabled
+              )}
+              onClick={handleMarkAll}
+              disabled={unreadCount === 0}
+            >
+              全部已读
+            </Button>
+          </View>
         </View>
 
         <View className={styles.statsCard}>
@@ -257,6 +285,130 @@ const NotifyPage: React.FC = () => {
                 <Text className={styles.bookSummaryStatLabel}>总通知</Text>
               </View>
             </View>
+          </View>
+        )}
+
+        {showReview && (
+          <View className={styles.reviewPanel}>
+            <View className={styles.reviewHeader}>
+              <View className={styles.reviewTitle}>
+                <Text>📊</Text>
+                <Text>近7天提醒复盘</Text>
+              </View>
+              <View className={styles.reviewLegend}>
+                <View className={styles.legendItem}>
+                  <View className={styles.legendDot} style={{ background: '#10B981' }} />
+                  <Text>更新</Text>
+                </View>
+                <View className={styles.legendItem}>
+                  <View className={styles.legendDot} style={{ background: '#F59E0B' }} />
+                  <Text>漏读</Text>
+                </View>
+                <View className={styles.legendItem}>
+                  <View className={styles.legendDot} style={{ background: '#F97316' }} />
+                  <Text>催更达成</Text>
+                </View>
+              </View>
+            </View>
+
+            {reviewTrends.length === 0 ? (
+              <View className={styles.reviewEmpty}>
+                <Text className={styles.reviewEmptyEmoji}>📭</Text>
+                <Text>近7天还没有更新通知</Text>
+              </View>
+            ) : (
+              reviewTrends.map((trend) => (
+                <View key={trend.bookId} className={styles.reviewCard}>
+                  <View
+                    className={styles.reviewCardHeader}
+                    onClick={() => handleTrendBookClick(trend)}
+                  >
+                    <Image
+                      className={styles.reviewCover}
+                      src={trend.bookCover}
+                      mode='aspectFill'
+                    />
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text className={styles.reviewBookTitle}>{trend.bookTitle}</Text>
+                      <Text className={styles.reviewBookMeta}>
+                        {trend.bookAuthor} · {formatTimeAgo(trend.latestUpdateAt)}
+                      </Text>
+                    </View>
+                    <View className={styles.reviewBookStats}>
+                      <View className={styles.reviewBookStat}>
+                        <Text className={styles.reviewBookStatValue}>{trend.totalUpdates}</Text>
+                        <Text className={styles.reviewBookStatLabel}>更</Text>
+                      </View>
+                      <View className={styles.reviewBookStat}>
+                        <Text className={styles.reviewBookStatValue}>{trend.totalUnread}</Text>
+                        <Text className={styles.reviewBookStatLabel}>漏</Text>
+                      </View>
+                      <View className={styles.reviewBookStat}>
+                        <Text className={styles.reviewBookStatValue}>{trend.totalUrgeReached}</Text>
+                        <Text className={styles.reviewBookStatLabel}>催</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View className={styles.reviewTrendRow}>
+                    {trend.days.map((day) => (
+                      <View
+                        key={day.date}
+                        className={styles.reviewTrendCell}
+                        onClick={() => handleDayClick(trend, day.date)}
+                      >
+                        <Text
+                          className={classnames(
+                            styles.reviewTrendDay,
+                            day.isToday && styles.reviewTrendDayToday
+                          )}
+                        >
+                          {day.dayLabel}
+                        </Text>
+                        <View
+                          className={classnames(
+                            styles.reviewTrendBar,
+                            day.isToday && styles.reviewTrendBarToday
+                          )}
+                        >
+                          {day.updateCount > 0 && (
+                            <View
+                              className={styles.reviewBarUpdate}
+                              style={{ height: `${Math.min(100, day.updateCount * 30 + 20)}%` }}
+                            />
+                          )}
+                          {day.unreadCount > 0 && (
+                            <View
+                              className={styles.reviewBarUnread}
+                              style={{ height: `${Math.min(60, day.unreadCount * 25 + 15)}%` }}
+                            />
+                          )}
+                          {day.urgeReachedCount > 0 && (
+                            <View
+                              className={styles.reviewBarUrge}
+                              style={{ height: `${Math.min(40, day.urgeReachedCount * 30 + 10)}%` }}
+                            />
+                          )}
+                        </View>
+                        <Text className={styles.reviewTrendDate}>{day.date.slice(3)}</Text>
+                        {day.updateCount > 0 && (
+                          <View className={styles.reviewTrendBadge}>
+                            <Text>{day.updateCount}</Text>
+                          </View>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+
+                  <View className={styles.reviewWeeklySummary}>
+                    <Text>本周更 {formatNumber(trend.totalWords)} 字</Text>
+                    <Text style={{ marginLeft: 'auto', color: '#6B7280' }}>
+                      点击柱条定位到对应通知
+                    </Text>
+                  </View>
+                </View>
+              ))
+            )}
           </View>
         )}
 

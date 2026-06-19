@@ -13,8 +13,10 @@ import {
   openReadLink,
   generateUpdateCalendar,
   analyzeUpdateRhythm,
+  predictNextUpdate,
   type CalendarDay,
-  type RhythmResult
+  type RhythmResult,
+  type NextUpdatePrediction
 } from '@/utils';
 import styles from './index.module.scss';
 
@@ -70,6 +72,20 @@ const DetailPage: React.FC = () => {
   }
 
   const urgePercent = Math.min((book.urgeCount / urgeTarget) * 100, 100);
+
+  const recentChapters = useMemo<ChapterRecord[]>(() => book.recentChapters || [], [book.recentChapters]);
+  const rhythm = useMemo<RhythmResult>(
+    () => analyzeUpdateRhythm(recentChapters, book.lastChapterAt),
+    [recentChapters, book.lastChapterAt]
+  );
+  const calendar = useMemo<CalendarDay[]>(
+    () => generateUpdateCalendar(recentChapters),
+    [recentChapters]
+  );
+  const nextUpdate = useMemo<NextUpdatePrediction>(
+    () => predictNextUpdate(recentChapters, book.lastChapterAt, book.reminder.thresholdHours),
+    [recentChapters, book.lastChapterAt, book.reminder.thresholdHours]
+  );
 
   const handleSaveReminder = () => {
     console.log('[DetailPage] save reminder:', {
@@ -220,19 +236,61 @@ const DetailPage: React.FC = () => {
           </View>
           <View className={styles.timeline}>
             {(() => {
-              const rhythm: RhythmResult = analyzeUpdateRhythm(book.recentChapters, book.lastChapterAt);
-              const calendar: CalendarDay[] = generateUpdateCalendar(book.recentChapters);
               const avgInterval = (() => {
-                const list = book.recentChapters || [];
-                if (list.length < 2) return '稳定';
+                if (recentChapters.length < 2) return '稳定';
                 let total = 0;
-                for (let i = 1; i < list.length; i++) {
-                  total += Math.abs(list[i - 1].updatedAt - list[i].updatedAt);
+                for (let i = 1; i < recentChapters.length; i++) {
+                  total += Math.abs(recentChapters[i - 1].updatedAt - recentChapters[i].updatedAt);
                 }
-                return formatInterval(0, total / (list.length - 1)).replace('前', '');
+                return formatInterval(0, total / (recentChapters.length - 1)).replace('前', '');
               })();
               return (
                 <>
+                  {nextUpdate.overdue && (
+                    <View className={styles.overdueBar}>
+                      <View className={styles.overdueLeft}>
+                        <Text className={styles.overdueEmoji}>⏰</Text>
+                        <View>
+                          <Text className={styles.overdueTitle}>已超过预期更新时间 {nextUpdate.overdueHours} 小时</Text>
+                          <Text className={styles.overdueDesc}>是否去催更或调整提醒规则？</Text>
+                        </View>
+                      </View>
+                      <View className={styles.overdueBtns}>
+                        <Button
+                          className={`${styles.overdueBtn} ${styles.overdueBtnPrimary}`}
+                          onClick={handleUrge}
+                        >
+                          去催更
+                        </Button>
+                        <Button
+                          className={`${styles.overdueBtn} ${styles.overdueBtnGhost}`}
+                          onClick={() => Taro.pageScrollTo({ selector: '#reminder-settings', duration: 300 })}
+                        >
+                          调提醒
+                        </Button>
+                      </View>
+                    </View>
+                  )}
+
+                  <View className={styles.predictCard}>
+                    <View className={styles.predictRow}>
+                      <Text className={styles.predictEmoji}>🔮</Text>
+                      <View className={styles.predictContent}>
+                        <Text className={styles.predictTitle}>下次更新预测</Text>
+                        <Text className={styles.predictWindow}>{nextUpdate.windowText}</Text>
+                      </View>
+                      <View
+                        className={classnames(
+                          styles.predictConfidence,
+                          nextUpdate.confidence === 'high' && styles.predictHigh,
+                          nextUpdate.confidence === 'low' && styles.predictLow
+                        )}
+                      >
+                        {nextUpdate.confidence === 'high' ? '很准' : nextUpdate.confidence === 'medium' ? '还行' : '不确定'}
+                      </View>
+                    </View>
+                  </View>
+
                   <View className={styles.rhythmCard}>
                     <View className={styles.rhythmMain}>
                       <Text className={styles.rhythmEmoji}>{rhythm.emoji}</Text>
@@ -297,7 +355,7 @@ const DetailPage: React.FC = () => {
                     </View>
                   </View>
 
-                  {(book.recentChapters || []).map((chapter: ChapterRecord, idx: number) => (
+                  {(recentChapters).map((chapter: ChapterRecord, idx: number) => (
                     <View key={idx} className={styles.timelineItem}>
                       <View className={classnames(styles.timelineDot, idx === 0 && styles.isLatest)} />
                       <View className={styles.timelineLine} />
@@ -362,7 +420,7 @@ const DetailPage: React.FC = () => {
           </View>
         </View>
 
-        <View className={styles.section}>
+        <View className={styles.section} id='reminder-settings'>
           <View className={styles.sectionHeader}>
             <View className={styles.sectionTitle}>
               <Text>⏰</Text>

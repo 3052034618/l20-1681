@@ -577,7 +577,7 @@ export const searchSuggestions: string[] = [
   '深海余烬'
 ];
 
-const generateRecentChapters = (book: Book): ChapterRecord[] => {
+export const generateRecentChapters = (book: Book): ChapterRecord[] => {
   const chapters: ChapterRecord[] = [];
   const parseChapterNum = (title: string): number => {
     const m = title.match(/第(\d+)/);

@@ -227,3 +227,165 @@ export const analyzeUpdateRhythm = (
     totalWords
   };
 };
+
+export interface NextUpdatePrediction {
+  earliestTs: number;
+  latestTs: number;
+  avgIntervalHours: number;
+  confidence: 'high' | 'medium' | 'low';
+  windowText: string;
+  overdue: boolean;
+  overdueHours: number;
+}
+
+export const predictNextUpdate = (
+  recentChapters: ChapterRecord[] = [],
+  lastChapterAt: number,
+  thresholdHours: number = 24
+): NextUpdatePrediction => {
+  const valid = (recentChapters || []).filter((c) => c.updatedAt > 0);
+  const now = Date.now();
+
+  if (valid.length < 2) {
+    const hoursSince = Math.max(0, (now - lastChapterAt) / 3600000);
+    const overdue = hoursSince > thresholdHours;
+    return {
+      earliestTs: now + thresholdHours * 3600000,
+      latestTs: now + (thresholdHours + 12) * 3600000,
+      avgIntervalHours: thresholdHours,
+      confidence: 'low',
+      windowText: overdue ? '已断更，时间不确定' : `预计 ${formatInterval(lastChapterAt + thresholdHours * 3600000)} 左右更新`,
+      overdue,
+      overdueHours: overdue ? Math.round(hoursSince - thresholdHours) : 0
+    };
+  }
+
+  const intervals: number[] = [];
+  for (let i = 1; i < valid.length; i++) {
+    const diff = Math.abs(valid[i - 1].updatedAt - valid[i].updatedAt) / 3600000;
+    if (diff > 0.5 && diff < 168) intervals.push(diff);
+  }
+  if (intervals.length === 0) intervals.push(24);
+
+  const avg = intervals.reduce((s, v) => s + v, 0) / intervals.length;
+  const sorted = [...intervals].sort((a, b) => a - b);
+  const minGap = sorted[0];
+  const maxGap = sorted[sorted.length - 1];
+
+  const earliest = lastChapterAt + minGap * 3600000;
+  const latest = lastChapterAt + maxGap * 3600000;
+  const hoursSince = (now - lastChapterAt) / 3600000;
+  const overdue = hoursSince > avg + 4;
+
+  let windowText: string;
+  if (overdue) {
+    windowText = `已超出预期 ${Math.round(hoursSince - avg)} 小时，可能断更`;
+  } else if (avg < 26) {
+    windowText = `预计今日 ${dayjs(earliest).format('HH:mm')} - ${dayjs(latest).format('HH:mm')} 更新`;
+  } else if (avg < 72) {
+    windowText = `预计 ${dayjs(earliest).format('MM-DD HH:mm')} 前后更新`;
+  } else {
+    windowText = `预计 ${dayjs(earliest).format('MM-DD')} ~ ${dayjs(latest).format('MM-DD')} 更新`;
+  }
+
+  let confidence: 'high' | 'medium' | 'low' = 'medium';
+  if (intervals.length >= 4 && maxGap - minGap < avg * 0.4) confidence = 'high';
+  else if (intervals.length < 3) confidence = 'low';
+
+  return {
+    earliestTs: earliest,
+    latestTs: latest,
+    avgIntervalHours: Math.round(avg * 10) / 10,
+    confidence,
+    windowText,
+    overdue,
+    overdueHours: overdue ? Math.round(hoursSince - avg) : 0
+  };
+};
+
+export interface TrendDay {
+  date: string;
+  dayLabel: string;
+  weekday: number;
+  isToday: boolean;
+  updateCount: number;
+  unreadCount: number;
+  urgeReachedCount: number;
+  totalWords: number;
+}
+
+export interface BookReviewTrend {
+  bookId: string;
+  bookTitle: string;
+  bookAuthor: string;
+  bookCover: string;
+  totalUpdates: number;
+  totalUnread: number;
+  totalUrgeReached: number;
+  totalWords: number;
+  latestUpdateAt: number;
+  days: TrendDay[];
+}
+
+export const generateBookReviewTrends = (
+  books: { id: string; title: string; author: string; cover: string }[],
+  notifies: { id: string; bookId: string; read: boolean; urgeReached: boolean; chapterWords: number; createdAt: number }[]
+): BookReviewTrend[] => {
+  const now = dayjs();
+  const days: TrendDay[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = now.subtract(i, 'day');
+    days.push({
+      date: d.format('MM-DD'),
+      dayLabel: d.format('ddd').replace('周', ''),
+      weekday: d.day(),
+      isToday: i === 0,
+      updateCount: 0,
+      unreadCount: 0,
+      urgeReachedCount: 0,
+      totalWords: 0
+    });
+  }
+
+  const trendsMap: Record<string, BookReviewTrend> = {};
+  books.forEach((b) => {
+    trendsMap[b.id] = {
+      bookId: b.id,
+      bookTitle: b.title,
+      bookAuthor: b.author,
+      bookCover: b.cover,
+      totalUpdates: 0,
+      totalUnread: 0,
+      totalUrgeReached: 0,
+      totalWords: 0,
+      latestUpdateAt: 0,
+      days: days.map((d) => ({ ...d }))
+    };
+  });
+
+  const startOfDay = (ts: number) => dayjs(ts).format('YYYY-MM-DD');
+  const weekKeys: string[] = [];
+  for (let i = 6; i >= 0; i--) weekKeys.push(now.subtract(i, 'day').format('YYYY-MM-DD'));
+
+  notifies.forEach((n) => {
+    const trend = trendsMap[n.bookId];
+    if (!trend) return;
+    const key = startOfDay(n.createdAt);
+    const dayIdx = weekKeys.indexOf(key);
+    if (dayIdx < 0) return;
+
+    trend.totalUpdates += 1;
+    trend.totalWords += n.chapterWords || 0;
+    if (!n.read) trend.totalUnread += 1;
+    if (n.urgeReached) trend.totalUrgeReached += 1;
+    if (n.createdAt > trend.latestUpdateAt) trend.latestUpdateAt = n.createdAt;
+
+    const dayTrend = trend.days[dayIdx];
+    dayTrend.updateCount += 1;
+    dayTrend.totalWords += n.chapterWords || 0;
+    if (!n.read) dayTrend.unreadCount += 1;
+    if (n.urgeReached) dayTrend.urgeReachedCount += 1;
+  });
+
+  return Object.values(trendsMap).filter((t) => t.totalUpdates > 0);
+};

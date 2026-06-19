@@ -11,6 +11,35 @@
   padding: $spacing-lg 0;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.reviewToggleBtn {
+  @include button-reset;
+  padding: 8rpx 24rpx;
+  height: 56rpx;
+  border-radius: $radius-button;
+  background: $color-bg-soft;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.96);
+  }
+}
+
+.reviewToggleBtnActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.25);
+}
+
 .headerLeft {
   display: flex;
   align-items: center;
@@ -289,6 +318,239 @@
   color: #7C3AED;
   opacity: 0.8;
   margin-top: 4rpx;
+}
+
+.reviewPanel {
+  margin-bottom: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.reviewTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.reviewLegend {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.legendDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+}
+
+.reviewEmpty {
+  padding: $spacing-xl 0;
+  text-align: center;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.reviewEmptyEmoji {
+  display: block;
+  font-size: 64rpx;
+  margin-bottom: $spacing-sm;
+}
+
+.reviewCard {
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: linear-gradient(135deg, #FAFAF9 0%, #F5F5F4 100%);
+  border-radius: $radius-md;
+  border: 2rpx solid #E7E5E4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.reviewCardHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.reviewCover {
+  width: 72rpx;
+  height: 96rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  background: $color-bg-soft;
+}
+
+.reviewBookTitle {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reviewBookMeta {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.reviewBookStats {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.reviewBookStat {
+  text-align: center;
+  min-width: 52rpx;
+  padding: 6rpx 10rpx;
+  border-radius: $radius-button;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.reviewBookStatValue {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1;
+}
+
+.reviewBookStatLabel {
+  display: block;
+  font-size: 20rpx;
+  color: $color-text-secondary;
+  margin-top: 4rpx;
+}
+
+.reviewTrendRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8rpx;
+  height: 180rpx;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid #E7E5E4;
+  margin-bottom: $spacing-sm;
+}
+
+.reviewTrendCell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  position: relative;
+  min-width: 0;
+}
+
+.reviewTrendDay {
+  font-size: 20rpx;
+  color: $color-text-secondary;
+  margin-bottom: 6rpx;
+}
+
+.reviewTrendDayToday {
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.reviewTrendBar {
+  width: 100%;
+  max-width: 60rpx;
+  height: 120rpx;
+  background: #F5F5F4;
+  border-radius: 8rpx 8rpx 4rpx 4rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2rpx;
+  overflow: hidden;
+  padding: 4rpx 0;
+}
+
+.reviewTrendBarToday {
+  border: 2rpx solid $color-primary;
+}
+
+.reviewBarUpdate {
+  width: 70%;
+  background: linear-gradient(180deg, #34D399 0%, #10B981 100%);
+  border-radius: 4rpx;
+  min-height: 8rpx;
+}
+
+.reviewBarUnread {
+  width: 50%;
+  background: linear-gradient(180deg, #FBBF24 0%, #F59E0B 100%);
+  border-radius: 4rpx;
+  min-height: 6rpx;
+}
+
+.reviewBarUrge {
+  width: 40%;
+  background: linear-gradient(180deg, #FB923C 0%, #F97316 100%);
+  border-radius: 4rpx;
+  min-height: 6rpx;
+}
+
+.reviewTrendDate {
+  font-size: 18rpx;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+}
+
+.reviewTrendBadge {
+  position: absolute;
+  top: 0;
+  right: 4rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 6rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: 18rpx;
+  line-height: 28rpx;
+  text-align: center;
+  font-weight: $font-weight-semibold;
+}
+
+.reviewWeeklySummary {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
 }
 
 
