@@ -456,6 +456,144 @@
   box-shadow: $shadow-card;
 }
 
+.rhythmCard {
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  background: linear-gradient(135deg, #EFF6FF 0%, #E0E7FF 100%);
+  border-radius: $radius-md;
+}
+
+.rhythmMain {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.rhythmEmoji {
+  font-size: 64rpx;
+  line-height: 1;
+}
+
+.rhythmInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.rhythmLabel {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.rhythmDesc {
+  font-size: $font-size-xs;
+  color: #6366F1;
+}
+
+.rhythmStats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid rgba(99, 102, 241, 0.15);
+}
+
+.rhythmStat {
+  text-align: center;
+  flex: 1;
+}
+
+.rhythmStatValue {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.rhythmStatLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: #6366F1;
+  margin-top: 4rpx;
+}
+
+.calendar {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.calendarDay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.calendarWeek {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-medium;
+}
+
+.calendarWeekToday {
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.calendarWeekWeekend {
+  color: $color-accent;
+}
+
+.calendarCell {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+  transition: all $transition-fast;
+}
+
+.calendarCellToday {
+  border-color: $color-primary;
+}
+
+.calendarCellActive {
+  background: linear-gradient(135deg, $color-success 0%, #10B981 100%);
+  color: #fff;
+}
+
+.calendarCellHot {
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+}
+
+.calendarCellText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: inherit;
+}
+
+.calendarCellEmpty {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-medium;
+}
+
+.calendarDate {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
 .timelineSummary {
   display: flex;
   justify-content: space-between;

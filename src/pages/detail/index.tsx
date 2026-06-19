@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, Image, Button, ScrollView } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { Book, RemindMode, ChapterRecord } from '@/types';
 import { useAppStore } from '@/store';
@@ -10,7 +10,11 @@ import {
   formatNumber,
   formatInterval,
   getStatusText,
-  openReadLink
+  openReadLink,
+  generateUpdateCalendar,
+  analyzeUpdateRhythm,
+  type CalendarDay,
+  type RhythmResult
 } from '@/utils';
 import styles from './index.module.scss';
 
@@ -36,6 +40,12 @@ const DetailPage: React.FC = () => {
     () => books.find((b) => b.id === bookId),
     [books, bookId]
   );
+
+  const refreshBook = useAppStore((s) => s.refreshBookStatus);
+
+  useDidShow(() => {
+    refreshBook();
+  });
 
   const [reminderMode, setReminderMode] = useState<RemindMode>(
     book?.reminder.mode || 'hours'
@@ -203,62 +213,118 @@ const DetailPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <View className={styles.sectionTitle}>
-              <Text>�</Text>
+              <Text>📋</Text>
               <Text>更新记录</Text>
             </View>
             <Text className={styles.descExpand}>最近 {book.recentChapters?.length || 6} 章</Text>
           </View>
           <View className={styles.timeline}>
-            <View className={styles.timelineSummary}>
-              <View className={styles.timelineSummaryLeft}>
-                <Text>📈</Text>
-                <Text>
-                  更新节奏：
-                  {book.status === 'updated'
-                    ? '稳定日更 👍'
-                    : book.status === 'waiting'
-                    ? '节奏适中 ⏳'
-                    : '长期断更 ⚠️'}
-                </Text>
-              </View>
-              <View className={styles.timelineSummaryBadge}>
-                平均 {(() => {
-                  const list = book.recentChapters || [];
-                  if (list.length < 2) return '稳定';
-                  let total = 0;
-                  for (let i = 1; i < list.length; i++) {
-                    total += Math.abs(list[i - 1].updatedAt - list[i].updatedAt);
-                  }
-                  return formatInterval(0, total / (list.length - 1)).replace('前', '');
-                })()}/章
-              </View>
-            </View>
-
-            {(book.recentChapters || []).map((chapter: ChapterRecord, idx: number) => (
-              <View key={idx} className={styles.timelineItem}>
-                <View className={classnames(styles.timelineDot, idx === 0 && styles.isLatest)} />
-                <View className={styles.timelineLine} />
-                <View className={styles.timelineContent}>
-                  <View className={styles.timelineTitle}>
-                    <Text className={styles.timelineChapter}>{chapter.title}</Text>
-                    <View className={classnames(styles.timelineInterval, idx === 0 && styles.isLatest)}>
-                      <Text>{idx === 0 ? '最新更新' : chapter.intervalText}</Text>
+            {(() => {
+              const rhythm: RhythmResult = analyzeUpdateRhythm(book.recentChapters, book.lastChapterAt);
+              const calendar: CalendarDay[] = generateUpdateCalendar(book.recentChapters);
+              const avgInterval = (() => {
+                const list = book.recentChapters || [];
+                if (list.length < 2) return '稳定';
+                let total = 0;
+                for (let i = 1; i < list.length; i++) {
+                  total += Math.abs(list[i - 1].updatedAt - list[i].updatedAt);
+                }
+                return formatInterval(0, total / (list.length - 1)).replace('前', '');
+              })();
+              return (
+                <>
+                  <View className={styles.rhythmCard}>
+                    <View className={styles.rhythmMain}>
+                      <Text className={styles.rhythmEmoji}>{rhythm.emoji}</Text>
+                      <View className={styles.rhythmInfo}>
+                        <Text className={styles.rhythmLabel}>{rhythm.label}</Text>
+                        <Text className={styles.rhythmDesc}>{rhythm.description}</Text>
+                      </View>
+                    </View>
+                    <View className={styles.rhythmStats}>
+                      <View className={styles.rhythmStat}>
+                        <Text className={styles.rhythmStatValue}>{rhythm.totalUpdates}</Text>
+                        <Text className={styles.rhythmStatLabel}>本周更</Text>
+                      </View>
+                      <View className={styles.rhythmStat}>
+                        <Text className={styles.rhythmStatValue}>{formatWords(rhythm.totalWords)}</Text>
+                        <Text className={styles.rhythmStatLabel}>周字数</Text>
+                      </View>
+                      <View className={styles.rhythmStat}>
+                        <Text className={styles.rhythmStatValue}>{avgInterval}</Text>
+                        <Text className={styles.rhythmStatLabel}>平均</Text>
+                      </View>
                     </View>
                   </View>
-                  <View className={styles.timelineMeta}>
-                    <Text className={styles.timelineWords}>{formatWords(chapter.words)}</Text>
-                    <Text>{formatTimeAgo(chapter.updatedAt)}</Text>
+
+                  <View className={styles.calendar}>
+                    {calendar.map((day) => (
+                      <View key={day.date} className={styles.calendarDay}>
+                        <Text
+                          className={classnames(
+                            styles.calendarWeek,
+                            day.isToday && styles.calendarWeekToday,
+                            (day.weekday === 0 || day.weekday === 6) && styles.calendarWeekWeekend
+                          )}
+                        >
+                          {day.dayLabel}
+                        </Text>
+                        <View
+                          className={classnames(
+                            styles.calendarCell,
+                            day.isToday && styles.calendarCellToday,
+                            day.updateCount > 0 && styles.calendarCellActive,
+                            day.updateCount >= 2 && styles.calendarCellHot
+                          )}
+                        >
+                          {day.updateCount > 0 ? (
+                            <Text className={styles.calendarCellText}>
+                              {day.updateCount > 1 ? `${day.updateCount}更` : '✓'}
+                            </Text>
+                          ) : (
+                            <Text className={styles.calendarCellEmpty}>-</Text>
+                          )}
+                        </View>
+                        <Text className={styles.calendarDate}>{day.date.slice(3)}</Text>
+                      </View>
+                    ))}
                   </View>
-                </View>
-              </View>
-            ))}
+
+                  <View className={styles.timelineSummary}>
+                    <View className={styles.timelineSummaryLeft}>
+                      <Text>📖</Text>
+                      <Text>最近章节</Text>
+                    </View>
+                  </View>
+
+                  {(book.recentChapters || []).map((chapter: ChapterRecord, idx: number) => (
+                    <View key={idx} className={styles.timelineItem}>
+                      <View className={classnames(styles.timelineDot, idx === 0 && styles.isLatest)} />
+                      <View className={styles.timelineLine} />
+                      <View className={styles.timelineContent}>
+                        <View className={styles.timelineTitle}>
+                          <Text className={styles.timelineChapter}>{chapter.title}</Text>
+                          <View className={classnames(styles.timelineInterval, idx === 0 && styles.isLatest)}>
+                            <Text>{idx === 0 ? '最新更新' : chapter.intervalText}</Text>
+                          </View>
+                        </View>
+                        <View className={styles.timelineMeta}>
+                          <Text className={styles.timelineWords}>{formatWords(chapter.words)}</Text>
+                          <Text>{formatTimeAgo(chapter.updatedAt)}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  ))}
+                </>
+              );
+            })()}
           </View>
         </View>
 
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <View className={styles.sectionTitle}>
-              <Text>��</Text>
+              <Text>🔥</Text>
               <Text>催更互动</Text>
             </View>
           </View>

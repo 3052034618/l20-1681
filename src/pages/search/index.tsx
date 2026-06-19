@@ -4,7 +4,7 @@ import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { Book } from '@/types';
 import { useAppStore } from '@/store';
-import { allSearchableBooks, matchBookFromUrl } from '@/data/mock';
+import { allSearchableBooks, matchBookFromUrl, supportedLinkSources } from '@/data/mock';
 import SearchBar from '@/components/SearchBar';
 import { formatNumber, formatWords, generateId, getBookStatus } from '@/utils';
 import styles from './index.module.scss';
@@ -86,8 +86,17 @@ const SearchPage: React.FC = () => {
           doSubscribe(matched);
         }
       } else {
-        setKeyword(trimmed);
-        Taro.showToast({ title: '未识别到作品，请尝试搜索', icon: 'none' });
+        Taro.showModal({
+          title: '😅 没能识别出作品',
+          content: '我们暂未收录该链接对应的作品，试试直接搜索书名或作者吧~',
+          confirmText: '去搜索',
+          cancelText: '知道了',
+          success: (res) => {
+            if (res.confirm) {
+              setKeyword(trimmed);
+            }
+          }
+        });
       }
     }, 600);
   };
@@ -109,7 +118,7 @@ const SearchPage: React.FC = () => {
             <Text>一键识别作品链接</Text>
           </View>
           <Text className={styles.pasteDesc}>
-            从起点、晋江、番茄等阅读平台复制链接粘贴到这里，自动识别并添加到书架
+            从{supportedLinkSources.slice(0, 3).join('、')}等阅读平台复制链接粘贴到这里，自动识别并添加到书架
           </Text>
           <View className={styles.pasteInputWrap}>
             <Input

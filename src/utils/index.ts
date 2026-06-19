@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
-import type { BookStatus, ReminderSetting } from '@/types';
+import type { BookStatus, ReminderSetting, ChapterRecord } from '@/types';
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -116,4 +116,114 @@ export const shouldShowNotify = (reminder: ReminderSetting, createdAt?: number):
     if (day !== 0 && day !== 6) return false;
   }
   return true;
+};
+
+export interface CalendarDay {
+  date: string;
+  dayLabel: string;
+  weekday: number;
+  isToday: boolean;
+  updateCount: number;
+  wordsCount: number;
+  chapters: ChapterRecord[];
+}
+
+export interface RhythmResult {
+  label: string;
+  emoji: string;
+  description: string;
+  level: number;
+  totalUpdates: number;
+  totalWords: number;
+}
+
+export const generateUpdateCalendar = (recentChapters: ChapterRecord[] = []): CalendarDay[] => {
+  const days: CalendarDay[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = dayjs().subtract(i, 'day');
+    const dayChapters = recentChapters.filter((c) => d.isSame(dayjs(c.updatedAt), 'day'));
+    days.push({
+      date: d.format('MM-DD'),
+      dayLabel: ['日', '一', '二', '三', '四', '五', '六'][d.day()],
+      weekday: d.day(),
+      isToday: i === 0,
+      updateCount: dayChapters.length,
+      wordsCount: dayChapters.reduce((sum, c) => sum + c.words, 0),
+      chapters: dayChapters
+    });
+  }
+  return days;
+};
+
+export const analyzeUpdateRhythm = (
+  recentChapters: ChapterRecord[] = [],
+  lastChapterAt: number
+): RhythmResult => {
+  const now = dayjs();
+  const lastUpdate = dayjs(lastChapterAt);
+  const hoursSinceLast = now.diff(lastUpdate, 'hour');
+  const recent7days = recentChapters.filter(
+    (c) => now.diff(dayjs(c.updatedAt), 'day') <= 7
+  );
+  const totalUpdates = recent7days.length;
+  const totalWords = recent7days.reduce((s, c) => s + c.words, 0);
+
+  if (totalUpdates === 0 && hoursSinceLast >= 24 * 7) {
+    return {
+      label: '长期断更',
+      emoji: '🌋',
+      description: '7天以上没有更新',
+      level: 0,
+      totalUpdates,
+      totalWords
+    };
+  }
+  if (totalUpdates === 0 && hoursSinceLast >= 48) {
+    return {
+      label: '停更中',
+      emoji: '💤',
+      description: '本周暂无更新',
+      level: 1,
+      totalUpdates,
+      totalWords
+    };
+  }
+  if (totalUpdates >= 6) {
+    return {
+      label: '稳定日更',
+      emoji: '☀️',
+      description: `本周更新 ${totalUpdates} 次，相当稳定`,
+      level: 4,
+      totalUpdates,
+      totalWords
+    };
+  }
+  if (totalUpdates >= 3) {
+    return {
+      label: '隔日更新',
+      emoji: '🌤️',
+      description: `本周更新 ${totalUpdates} 次，节奏不错`,
+      level: 3,
+      totalUpdates,
+      totalWords
+    };
+  }
+  if (totalUpdates >= 1) {
+    return {
+      label: '周更不稳',
+      emoji: '⛅',
+      description: `本周只更新了 ${totalUpdates} 次`,
+      level: 2,
+      totalUpdates,
+      totalWords
+    };
+  }
+  return {
+    label: '偶尔更新',
+    emoji: '🌥️',
+    description: '近期更新频次较低',
+    level: 2,
+    totalUpdates,
+    totalWords
+  };
 };

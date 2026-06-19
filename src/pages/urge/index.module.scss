@@ -8,6 +8,26 @@
   padding: $spacing-lg 0;
 }
 
+.backToDetail {
+  @include button-reset;
+  margin-top: $spacing-sm;
+  padding: 10rpx 24rpx;
+  height: 56rpx;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.25);
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.96);
+  }
+}
+
 .pageTitle {
   font-size: $font-size-xxl;
   font-weight: $font-weight-bold;

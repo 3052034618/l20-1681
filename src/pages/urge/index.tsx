@@ -88,8 +88,21 @@ const UrgePage: React.FC = () => {
     });
 
     setContent('');
-    Taro.showToast({ title: '发布成功！', icon: 'success' });
     if (selectedBook) setFeedBookFilter(selectedBook.id);
+    Taro.showModal({
+      title: '🎉 发布成功',
+      content: `催更声量+1！声量达成后作者会更快更新哦~${urlBookId ? '\n是否返回作品详情？' : ''}`,
+      confirmText: urlBookId ? '返回详情' : '好的',
+      cancelText: urlBookId ? '继续催更' : '',
+      showCancel: !!urlBookId,
+      success: (res) => {
+        if (res.confirm && urlBookId) {
+          Taro.navigateBack({
+            fail: () => Taro.redirectTo({ url: `/pages/detail/index?id=${urlBookId}` })
+          });
+        }
+      }
+    });
   };
 
   const handleSelectBook = (book: Book) => {
@@ -105,6 +118,18 @@ const UrgePage: React.FC = () => {
         <View className={styles.header}>
           <Text className={styles.pageTitle}>🔥 催更互动墙</Text>
           <Text className={styles.subTitle}>和百万书虫一起，催更大大会更！</Text>
+          {urlBookId && (
+            <Button
+              className={styles.backToDetail}
+              onClick={() => {
+                Taro.navigateBack({
+                  fail: () => Taro.redirectTo({ url: `/pages/detail/index?id=${urlBookId}` })
+                });
+              }}
+            >
+              ← 返回作品详情
+            </Button>
+          )}
         </View>
 
         <View className={styles.publishSection}>

@@ -550,6 +550,8 @@ const urlPatternMap: Record<string, string> = {
   '17k.com': '17K小说网'
 };
 
+export const supportedLinkSources = Object.values(urlPatternMap);
+
 export const matchBookFromUrl = (url: string): Book | null => {
   const trimmed = url.trim();
   const pool = [...mockBooks, ...discoveryBooks];
@@ -559,14 +561,6 @@ export const matchBookFromUrl = (url: string): Book | null => {
   if (bookIdMatch) {
     const byId = pool.find((b) => b.id === bookIdMatch[1] || b.id === `d${bookIdMatch[1]}`);
     if (byId) return byId;
-  }
-  for (const domain of Object.keys(urlPatternMap)) {
-    if (trimmed.includes(domain)) {
-      const matched = pool.filter((b) => b.source === urlPatternMap[domain]);
-      if (matched.length === 0) return null;
-      const hash = trimmed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-      return matched[hash % matched.length];
-    }
   }
   return null;
 };

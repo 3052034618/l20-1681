@@ -4,7 +4,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { NotifyItem, Book } from '@/types';
 import { useAppStore } from '@/store';
-import { shouldShowNotify } from '@/utils';
+import { shouldShowNotify, formatTimeAgo, formatWords } from '@/utils';
 import NotifyCard from '@/components/NotifyCard';
 import styles from './index.module.scss';
 
@@ -73,6 +73,18 @@ const NotifyPage: React.FC = () => {
     if (filter === 'urge') list = list.filter((n) => n.urgeReached);
     return list;
   }, [visibleNotifies, filter, selectedBookId]);
+
+  const bookSummary = useMemo(() => {
+    if (selectedBookId === 'all') return null;
+    const list = visibleNotifies.filter((n) => n.bookId === selectedBookId);
+    const book = books.find((b) => b.id === selectedBookId);
+    if (!book || list.length === 0) return null;
+    const unread = list.filter((n) => !n.read).length;
+    const urgeReached = list.filter((n) => n.urgeReached).length;
+    const totalWords = list.reduce((s, n) => s + n.chapterWords, 0);
+    const latest = list.reduce((a, b) => (a.createdAt > b.createdAt ? a : b), list[0]);
+    return { book, unread, urgeReached, totalWords, latest, total: list.length };
+  }, [visibleNotifies, selectedBookId, books]);
 
   usePullDownRefresh(() => {
     setTimeout(() => {
@@ -201,6 +213,50 @@ const NotifyPage: React.FC = () => {
                 </View>
               ))}
             </ScrollView>
+          </View>
+        )}
+
+        {bookSummary && (
+          <View className={styles.bookSummaryCard}>
+            <View className={styles.bookSummaryHeader}>
+              <Image
+                className={styles.bookSummaryCover}
+                src={bookSummary.book.cover}
+                mode='aspectFill'
+              />
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text className={styles.bookSummaryTitle}>{bookSummary.book.title}</Text>
+                <Text className={styles.bookSummaryAuthor}>
+                  {bookSummary.book.author} · 最近更新 {formatTimeAgo(bookSummary.latest.createdAt)}
+                </Text>
+              </View>
+            </View>
+            <View className={styles.bookSummaryStats}>
+              <View className={styles.bookSummaryStat}>
+                <Text className={styles.bookSummaryStatValue}>
+                  {bookSummary.unread}
+                </Text>
+                <Text className={styles.bookSummaryStatLabel}>未读</Text>
+              </View>
+              <View className={styles.bookSummaryStat}>
+                <Text className={styles.bookSummaryStatValue}>
+                  {formatWords(bookSummary.totalWords)}
+                </Text>
+                <Text className={styles.bookSummaryStatLabel}>更字数</Text>
+              </View>
+              <View className={styles.bookSummaryStat}>
+                <Text className={styles.bookSummaryStatValue}>
+                  {bookSummary.urgeReached}
+                </Text>
+                <Text className={styles.bookSummaryStatLabel}>催更达成</Text>
+              </View>
+              <View className={styles.bookSummaryStat}>
+                <Text className={styles.bookSummaryStatValue}>
+                  {bookSummary.total}
+                </Text>
+                <Text className={styles.bookSummaryStatLabel}>总通知</Text>
+              </View>
+            </View>
           </View>
         )}
 
