@@ -1,0 +1,330 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+}
+
+.header {
+  padding: $spacing-lg 0;
+}
+
+.pageTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.subTitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.publishSection {
+  margin-bottom: $spacing-xl;
+}
+
+.publishCard {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.bookSelect {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-soft;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.bookSelectLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+}
+
+.bookCover {
+  width: 72rpx;
+  height: 96rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.bookInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.bookAuthor {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 2rpx;
+  @include text-ellipsis;
+}
+
+.arrow {
+  font-size: $font-size-lg;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.templates {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  padding-bottom: $spacing-xs;
+}
+
+.templateItem {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 24rpx;
+  border-radius: $radius-button;
+  transition: all $transition-fast;
+  border: 2rpx solid transparent;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.templateInactive {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.templateActive {
+  border-color: currentColor;
+  transform: scale(1.02);
+}
+
+.templateEmoji {
+  font-size: $font-size-md;
+}
+
+.templateName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.exampleText {
+  padding: $spacing-md;
+  background: $color-bg-soft;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-md;
+  border-left: 4rpx solid $color-primary;
+}
+
+.textareaWrap {
+  position: relative;
+  margin-bottom: $spacing-md;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+  box-sizing: border-box;
+}
+
+.charCount {
+  position: absolute;
+  right: $spacing-md;
+  bottom: $spacing-md;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.publishBtn {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 6rpx 20rpx rgba(249, 115, 22, 0.3);
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+}
+
+.feedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+}
+
+.feedTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sortTabs {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.sortTab {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+}
+
+.sortTabActive {
+  background: $color-bg-soft;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.emptyFeed {
+  @include flex-center;
+  flex-direction: column;
+  padding: $spacing-xl * 2 0;
+  gap: $spacing-md;
+}
+
+.emptyEmoji {
+  font-size: 100rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.bookPickerModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+  transition: all $transition-base;
+}
+
+.bookPickerContent {
+  width: 100%;
+  max-height: 70vh;
+  background: $color-bg-card;
+  border-radius: $radius-xl $radius-xl 0 0;
+  padding: $spacing-lg;
+  padding-bottom: calc(#{$spacing-lg} + env(safe-area-inset-bottom));
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.pickerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.closeBtn {
+  font-size: $font-size-xl;
+  color: $color-text-tertiary;
+  padding: $spacing-xs;
+}
+
+.pickerList {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.pickerItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.pickerItemActive {
+  background: $color-bg-soft;
+}
+
+.pickerCover {
+  width: 80rpx;
+  height: 106rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}

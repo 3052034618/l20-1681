@@ -1,0 +1,59 @@
+@use '@/styles/variables.scss' as *;
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+}
+
+.barActive {
+  box-shadow: $shadow-card-hover;
+}
+
+.icon {
+  font-size: $font-size-lg;
+  flex-shrink: 0;
+}
+
+.inputWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: 56rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+}
+
+.placeholder {
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex-shrink: 0;
+  padding: 8rpx 24rpx;
+  height: 56rpx;
+  border-radius: $radius-button;
+  background: $color-bg-soft;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.96);
+  }
+}

@@ -1,0 +1,257 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+}
+
+.searchBarSection {
+  padding: $spacing-lg 0;
+}
+
+.resultSection {
+  margin-top: $spacing-sm;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.clearBtn {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.suggestionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.suggestionItem {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 28rpx;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  box-shadow: $shadow-card;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $color-bg-soft;
+    color: $color-primary;
+    transform: scale(0.96);
+  }
+}
+
+.hotTag {
+  margin-left: 6rpx;
+  padding: 2rpx 8rpx;
+  font-size: 20rpx;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+  color: $color-text-white;
+  border-radius: $radius-xs;
+  font-weight: $font-weight-medium;
+}
+
+.bookResultCard {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.resultCover {
+  width: 140rpx;
+  height: 188rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.resultInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.resultTop {
+  min-width: 0;
+}
+
+.resultTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.resultAuthor {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: 4rpx;
+  @include text-ellipsis;
+}
+
+.resultTags {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+  margin-top: $spacing-sm;
+}
+
+.resultTag {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  background: $color-bg-soft;
+  font-size: 20rpx;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.resultDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+  margin-top: $spacing-xs;
+  @include text-ellipsis-multi(2);
+}
+
+.resultBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resultMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.subBtn {
+  @include button-reset;
+  padding: 12rpx 32rpx;
+  height: 60rpx;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.25);
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.96);
+  }
+}
+
+.subBtnActive {
+  background: $color-bg-hover;
+  color: $color-text-tertiary;
+  box-shadow: none;
+}
+
+.emptyResult {
+  @include flex-center;
+  flex-direction: column;
+  padding: $spacing-xl * 3 0;
+  gap: $spacing-md;
+}
+
+.emptyEmoji {
+  font-size: 100rpx;
+}
+
+.emptyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+}
+
+.pasteSection {
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, $color-bg-soft 0%, #EDE9FE 100%);
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.pasteTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.pasteDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-md;
+}
+
+.pasteInputWrap {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.pasteInput {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.pasteBtn {
+  @include button-reset;
+  flex-shrink: 0;
+  padding: 0 $spacing-lg;
+  height: 72rpx;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  box-shadow: 0 4rpx 12rpx rgba(249, 115, 22, 0.25);
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.96);
+  }
+}

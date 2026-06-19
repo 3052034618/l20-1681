@@ -1,0 +1,450 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+}
+
+.hero {
+  padding: $spacing-xl $page-padding;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: 0 0 32rpx 32rpx;
+  margin: 0 (-$page-padding);
+  padding-left: $page-padding;
+  padding-right: $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.heroContent {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.coverWrap {
+  flex-shrink: 0;
+  width: 200rpx;
+  height: 268rpx;
+  border-radius: $radius-md;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.2);
+  background: $color-bg-hover;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+}
+
+.bookInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: $line-height-tight;
+  @include text-ellipsis-multi(2);
+}
+
+.author {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 6rpx 16rpx;
+  margin-top: $spacing-sm;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  align-self: flex-start;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 20rpx;
+  margin-top: $spacing-sm;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  align-self: flex-start;
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-xl;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.15);
+}
+
+.statItem {
+  text-align: center;
+  flex: 1;
+}
+
+.statNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+.section {
+  margin-top: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.card {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.descText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  @include text-ellipsis-multi(4);
+}
+
+.descExpand {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  margin-top: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+
+.tagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.tagItem {
+  padding: 8rpx 20rpx;
+  background: $color-bg-soft;
+  color: $color-primary;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.lastChapter {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-md;
+}
+
+.chapterInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.chapterLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.chapterName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: 4rpx;
+}
+
+.chapterMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.readBtn {
+  @include button-reset;
+  flex-shrink: 0;
+  padding: 12rpx 32rpx;
+  height: 72rpx;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 6rpx 16rpx rgba(249, 115, 22, 0.25);
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.96);
+  }
+}
+
+.urgeSection {
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, #FFF7ED 0%, #FED7AA 100%);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.urgeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.urgeTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: #9A3412;
+}
+
+.urgeNum {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-accent-dark;
+}
+
+.urgeProgress {
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.urgeProgressBar {
+  height: 100%;
+  background: linear-gradient(90deg, $color-accent 0%, $color-accent-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.urgeProgressText {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-xs;
+  color: #9A3412;
+  margin-bottom: $spacing-md;
+}
+
+.urgeBtns {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.urgeBtn {
+  @include button-reset;
+  flex: 1;
+  height: 72rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.urgeBtnPrimary {
+  background: $color-bg-card;
+  color: $color-accent-dark;
+}
+
+.urgeBtnAccent {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.25);
+}
+
+.reminderSection {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.modeTabs {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-md;
+}
+
+.modeTab {
+  @include flex-center;
+  padding: 12rpx 28rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.modeTabActive {
+  background: $color-bg-soft;
+  color: $color-primary;
+  border-color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.thresholdSection {
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.thresholdLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-md;
+}
+
+.hoursOptions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.hourOption {
+  @include flex-center;
+  padding: 12rpx 28rpx;
+  border-radius: $radius-md;
+  background: $color-bg-card;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+  border: 2rpx solid transparent;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.hourOptionActive {
+  background: $color-bg-soft;
+  color: $color-primary;
+  border-color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.weekendToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.toggleSwitch {
+  width: 96rpx;
+  height: 52rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  padding: 4rpx;
+  transition: all $transition-base;
+  box-sizing: border-box;
+}
+
+.toggleSwitchActive {
+  background: $color-primary;
+}
+
+.toggleDot {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+  transition: all $transition-base;
+}
+
+.toggleDotActive {
+  transform: translateX(44rpx);
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.bottomBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.bottomBtnSecondary {
+  background: $color-bg-soft;
+  color: $color-primary;
+}
+
+.bottomBtnPrimary {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  box-shadow: 0 6rpx 20rpx rgba(124, 58, 237, 0.3);
+}
