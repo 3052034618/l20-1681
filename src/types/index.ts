@@ -9,6 +9,13 @@ export interface ReminderSetting {
   customDays?: number[];
 }
 
+export interface ChapterRecord {
+  title: string;
+  words: number;
+  updatedAt: number;
+  intervalText: string;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -27,6 +34,7 @@ export interface Book {
   reminder: ReminderSetting;
   urgeCount: number;
   subscribedAt: number;
+  recentChapters?: ChapterRecord[];
 }
 
 export type UrgeTemplateType = 'gentle' | 'wish' | 'checkin' | 'urgent' | 'creative';

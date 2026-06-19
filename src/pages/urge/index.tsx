@@ -7,11 +7,11 @@ import {
   Button,
   ScrollView
 } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { useRouter, usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { UrgeTemplateType, Book } from '@/types';
 import { useAppStore } from '@/store';
-import { urgeTemplates } from '@/data/mock';
+import { urgeTemplates, allSearchableBooks } from '@/data/mock';
 import UrgeCard from '@/components/UrgeCard';
 import SectionHeader from '@/components/SectionHeader';
 import styles from './index.module.scss';
@@ -19,15 +19,23 @@ import styles from './index.module.scss';
 type SortType = 'latest' | 'hot';
 
 const UrgePage: React.FC = () => {
+  const router = useRouter();
+  const urlBookId = router.params.bookId as string;
   const books = useAppStore((s) => s.books);
   const urgePosts = useAppStore((s) => s.urgePosts);
   const addUrgePost = useAppStore((s) => s.addUrgePost);
 
-  const [selectedBook, setSelectedBook] = useState<Book | null>(books[0] || null);
+  const findBook = (id: string): Book | null => {
+    return books.find((b) => b.id === id) || allSearchableBooks.find((b) => b.id === id) || null;
+  };
+  const initialBook = (urlBookId && findBook(urlBookId)) || books[0] || null;
+
+  const [selectedBook, setSelectedBook] = useState<Book | null>(initialBook);
   const [selectedTemplate, setSelectedTemplate] = useState<UrgeTemplateType>('gentle');
   const [content, setContent] = useState('');
   const [showBookPicker, setShowBookPicker] = useState(false);
   const [sortType, setSortType] = useState<SortType>('latest');
+  const [feedBookFilter, setFeedBookFilter] = useState<string | null>(urlBookId || null);
 
   const currentTemplate = urgeTemplates.find((t) => t.id === selectedTemplate)!;
 
@@ -40,12 +48,15 @@ const UrgePage: React.FC = () => {
   });
 
   const sortedPosts = useMemo(() => {
-    const list = [...urgePosts];
+    let list = [...urgePosts];
+    if (feedBookFilter) {
+      list = list.filter((p) => p.bookId === feedBookFilter);
+    }
     if (sortType === 'hot') {
       list.sort((a, b) => b.likes + b.mergedCount - (a.likes + a.mergedCount));
     }
     return list;
-  }, [urgePosts, sortType]);
+  }, [urgePosts, sortType, feedBookFilter]);
 
   const handlePublish = () => {
     if (!selectedBook) {
@@ -78,12 +89,14 @@ const UrgePage: React.FC = () => {
 
     setContent('');
     Taro.showToast({ title: '发布成功！', icon: 'success' });
+    if (selectedBook) setFeedBookFilter(selectedBook.id);
   };
 
   const handleSelectBook = (book: Book) => {
     console.log('[UrgePage] select book:', book.title);
     setSelectedBook(book);
     setShowBookPicker(false);
+    setFeedBookFilter(book.id);
   };
 
   return (
@@ -184,6 +197,14 @@ const UrgePage: React.FC = () => {
           <View className={styles.feedTitle}>
             <Text>📣</Text>
             <Text>催更动态</Text>
+            {feedBookFilter && (
+              <Text
+                className={styles.filterClear}
+                onClick={() => setFeedBookFilter(null)}
+              >
+                {findBook(feedBookFilter)?.title || '当前作品'} ✕
+              </Text>
+            )}
           </View>
           <View className={styles.sortTabs}>
             <View

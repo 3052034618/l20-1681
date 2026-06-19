@@ -162,3 +162,68 @@
   text-align: center;
   line-height: $line-height-normal;
 }
+
+.bookFilterWrap {
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+}
+
+.bookFilterLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.bookFilterScroll {
+  white-space: nowrap;
+}
+
+.bookFilterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 10rpx 24rpx;
+  margin-right: $spacing-sm;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  box-shadow: $shadow-card;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+  vertical-align: middle;
+  max-width: 260rpx;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.bookFilterChipActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+}
+
+.bookFilterChipCover {
+  width: 36rpx;
+  height: 48rpx;
+  border-radius: 6rpx;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.bookFilterChipTitle {
+  @include text-ellipsis;
+  max-width: 160rpx;
+}
+
+.bookFilterChipCount {
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+}
+

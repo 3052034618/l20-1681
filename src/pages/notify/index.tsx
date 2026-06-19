@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Button, ScrollView } from '@tarojs/components';
+import { View, Text, Button, ScrollView, Image } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
 import type { NotifyItem, Book } from '@/types';
@@ -16,6 +16,7 @@ const NotifyPage: React.FC = () => {
   const markAllRead = useAppStore((s) => s.markAllNotifyRead);
 
   const [filter, setFilter] = useState<FilterType>('all');
+  const [selectedBookId, setSelectedBookId] = useState<string | 'all'>('all');
 
   const bookReminderMap = useMemo(() => {
     const map: Record<string, Book['reminder']> = {};
@@ -30,6 +31,16 @@ const NotifyPage: React.FC = () => {
       return shouldShowNotify(reminder, n.createdAt);
     });
   }, [notifies, bookReminderMap]);
+
+  const booksWithNotify = useMemo(() => {
+    const counts: Record<string, number> = {};
+    visibleNotifies.forEach((n) => {
+      counts[n.bookId] = (counts[n.bookId] || 0) + 1;
+    });
+    return books
+      .filter((b) => counts[b.id])
+      .map((b) => ({ book: b, count: counts[b.id] }));
+  }, [books, visibleNotifies]);
 
   const unreadCount = useMemo(
     () => visibleNotifies.filter((n) => !n.read).length,
@@ -54,16 +65,14 @@ const NotifyPage: React.FC = () => {
   }, [visibleNotifies]);
 
   const filteredNotifies = useMemo(() => {
-    let list: NotifyItem[] = [];
-    if (filter === 'all') {
-      list = visibleNotifies;
-    } else if (filter === 'unread') {
-      list = visibleNotifies.filter((n) => !n.read);
-    } else {
-      list = visibleNotifies.filter((n) => n.urgeReached);
+    let list: NotifyItem[] = visibleNotifies;
+    if (selectedBookId !== 'all') {
+      list = list.filter((n) => n.bookId === selectedBookId);
     }
+    if (filter === 'unread') list = list.filter((n) => !n.read);
+    if (filter === 'urge') list = list.filter((n) => n.urgeReached);
     return list;
-  }, [visibleNotifies, filter]);
+  }, [visibleNotifies, filter, selectedBookId]);
 
   usePullDownRefresh(() => {
     setTimeout(() => {
@@ -152,12 +161,56 @@ const NotifyPage: React.FC = () => {
           </View>
         </View>
 
+        {booksWithNotify.length > 0 && (
+          <View className={styles.bookFilterWrap}>
+            <View className={styles.bookFilterLabel}>
+              <Text>📚</Text>
+              <Text>按作品筛选</Text>
+            </View>
+            <ScrollView scrollX className={styles.bookFilterScroll} showScrollbar={false}>
+              <View
+                className={classnames(
+                  styles.bookFilterChip,
+                  selectedBookId === 'all' && styles.bookFilterChipActive
+                )}
+                onClick={() => setSelectedBookId('all')}
+              >
+                <Text>全部作品</Text>
+                <View className={styles.bookFilterChipCount}>
+                  <Text>{visibleNotifies.length}</Text>
+                </View>
+              </View>
+              {booksWithNotify.map(({ book, count }) => (
+                <View
+                  key={book.id}
+                  className={classnames(
+                    styles.bookFilterChip,
+                    selectedBookId === book.id && styles.bookFilterChipActive
+                  )}
+                  onClick={() => setSelectedBookId(book.id)}
+                >
+                  <Image
+                    className={styles.bookFilterChipCover}
+                    src={book.cover}
+                    mode='aspectFill'
+                  />
+                  <Text className={styles.bookFilterChipTitle}>{book.title}</Text>
+                  <View className={styles.bookFilterChipCount}>
+                    <Text>{count}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         <View className={styles.sectionTitle}>
           <View className={styles.sectionDot} />
           <Text className={styles.sectionText}>
             {filter === 'all' && '所有更新'}
             {filter === 'unread' && '未读更新'}
             {filter === 'urge' && '催更达成更新'}
+            {selectedBookId !== 'all' && ` · ${books.find((b) => b.id === selectedBookId)?.title || ''}`}
           </Text>
         </View>
 
@@ -171,7 +224,7 @@ const NotifyPage: React.FC = () => {
               {filter === 'unread' ? '🎉' : filter === 'urge' ? '🔥' : '📭'}
             </Text>
             <Text className={styles.emptyTitle}>
-              {filter === 'all' && '暂无更新通知'}
+              {filter === 'all' && (selectedBookId !== 'all' ? '该作品暂无更新通知' : '暂无更新通知')}
               {filter === 'unread' && '太棒了！全部已读'}
               {filter === 'urge' && '暂无催更达成绩效'}
             </Text>

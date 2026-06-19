@@ -1,5 +1,5 @@
-import type { Book, UrgeTemplate, UrgePost, NotifyItem, UserInfo, UrgeTemplateType } from '@/types';
-import { getBookStatus } from '@/utils';
+import type { Book, UrgeTemplate, UrgePost, NotifyItem, UserInfo, UrgeTemplateType, ChapterRecord } from '@/types';
+import { getBookStatus, formatInterval } from '@/utils';
 
 const now = Date.now();
 
@@ -551,18 +551,24 @@ const urlPatternMap: Record<string, string> = {
 };
 
 export const matchBookFromUrl = (url: string): Book | null => {
-  let matchedSource = '';
-  for (const [domain, source] of Object.entries(urlPatternMap)) {
-    if (url.includes(domain)) {
-      matchedSource = source;
-      break;
+  const trimmed = url.trim();
+  const pool = [...mockBooks, ...discoveryBooks];
+  const exact = pool.find((b) => trimmed === b.sourceUrl || trimmed.includes(b.sourceUrl));
+  if (exact) return exact;
+  const bookIdMatch = trimmed.match(/\/book\/(\w+)/);
+  if (bookIdMatch) {
+    const byId = pool.find((b) => b.id === bookIdMatch[1] || b.id === `d${bookIdMatch[1]}`);
+    if (byId) return byId;
+  }
+  for (const domain of Object.keys(urlPatternMap)) {
+    if (trimmed.includes(domain)) {
+      const matched = pool.filter((b) => b.source === urlPatternMap[domain]);
+      if (matched.length === 0) return null;
+      const hash = trimmed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      return matched[hash % matched.length];
     }
   }
-  if (!matchedSource) return null;
-  const pool = [...mockBooks, ...discoveryBooks];
-  const matched = pool.filter((b) => b.source === matchedSource);
-  if (matched.length === 0) return null;
-  return matched[Math.floor(Math.random() * matched.length)];
+  return null;
 };
 
 export const allSearchableBooks: Book[] = [...mockBooks, ...discoveryBooks];
@@ -572,8 +578,43 @@ export const searchSuggestions: string[] = [
   '诡秘之主',
   '牧神记',
   '天蚕土豆',
-  '猫腻',
-  '爱潜水的乌贼',
+  '牧神记',
   '宿命之环',
   '深海余烬'
 ];
+
+const generateRecentChapters = (book: Book): ChapterRecord[] => {
+  const chapters: ChapterRecord[] = [];
+  const parseChapterNum = (title: string): number => {
+    const m = title.match(/第(\d+)/);
+    return m ? parseInt(m[1], 10) : book.totalChapters;
+  };
+  const lastNum = parseChapterNum(book.lastChapter);
+  const chapterNames = ['初露锋芒', '暗流涌动', '风云再起', '力挽狂澜', '真相浮现', '风云突变'];
+  const intervals = [0, 8, 14, 26, 36, 48];
+  const wordBase = book.lastChapterWords;
+
+  for (let i = 0; i < 6; i++) {
+    const num = Math.max(1, lastNum - i);
+    const t = book.lastChapterAt - intervals[i] * 1000 * 60 * 60;
+    const words = Math.max(2000, wordBase - i * Math.round(Math.random() * 500));
+    chapters.push({
+      title: i === 0 ? book.lastChapter : `第${num}章 ${chapterNames[i % chapterNames.length]}`,
+      words,
+      updatedAt: t,
+      intervalText: ''
+    });
+  }
+  for (let i = 1; i < chapters.length; i++) {
+    chapters[i].intervalText = formatInterval(chapters[i].updatedAt, chapters[i - 1].updatedAt);
+  }
+  chapters[0].intervalText = '最新更新';
+  return chapters;
+};
+
+mockBooks.forEach((book) => {
+  book.recentChapters = generateRecentChapters(book);
+});
+discoveryBooks.forEach((book) => {
+  book.recentChapters = generateRecentChapters(book);
+});

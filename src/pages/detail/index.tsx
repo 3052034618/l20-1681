@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, Image, Button, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
-import type { Book, RemindMode } from '@/types';
+import type { Book, RemindMode, ChapterRecord } from '@/types';
 import { useAppStore } from '@/store';
 import {
   formatTimeAgo,
@@ -94,7 +94,7 @@ const DetailPage: React.FC = () => {
 
   const handleUrge = () => {
     console.log('[DetailPage] urge:', book.title);
-    Taro.switchTab({ url: '/pages/urge/index' });
+    Taro.navigateTo({ url: `/pages/urge/index?bookId=${book.id}` });
   };
 
   const handleRead = () => {
@@ -203,7 +203,62 @@ const DetailPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <View className={styles.sectionTitle}>
-              <Text>🔥</Text>
+              <Text>�</Text>
+              <Text>更新记录</Text>
+            </View>
+            <Text className={styles.descExpand}>最近 {book.recentChapters?.length || 6} 章</Text>
+          </View>
+          <View className={styles.timeline}>
+            <View className={styles.timelineSummary}>
+              <View className={styles.timelineSummaryLeft}>
+                <Text>📈</Text>
+                <Text>
+                  更新节奏：
+                  {book.status === 'updated'
+                    ? '稳定日更 👍'
+                    : book.status === 'waiting'
+                    ? '节奏适中 ⏳'
+                    : '长期断更 ⚠️'}
+                </Text>
+              </View>
+              <View className={styles.timelineSummaryBadge}>
+                平均 {(() => {
+                  const list = book.recentChapters || [];
+                  if (list.length < 2) return '稳定';
+                  let total = 0;
+                  for (let i = 1; i < list.length; i++) {
+                    total += Math.abs(list[i - 1].updatedAt - list[i].updatedAt);
+                  }
+                  return formatInterval(0, total / (list.length - 1)).replace('前', '');
+                })()}/章
+              </View>
+            </View>
+
+            {(book.recentChapters || []).map((chapter: ChapterRecord, idx: number) => (
+              <View key={idx} className={styles.timelineItem}>
+                <View className={classnames(styles.timelineDot, idx === 0 && styles.isLatest)} />
+                <View className={styles.timelineLine} />
+                <View className={styles.timelineContent}>
+                  <View className={styles.timelineTitle}>
+                    <Text className={styles.timelineChapter}>{chapter.title}</Text>
+                    <View className={classnames(styles.timelineInterval, idx === 0 && styles.isLatest)}>
+                      <Text>{idx === 0 ? '最新更新' : chapter.intervalText}</Text>
+                    </View>
+                  </View>
+                  <View className={styles.timelineMeta}>
+                    <Text className={styles.timelineWords}>{formatWords(chapter.words)}</Text>
+                    <Text>{formatTimeAgo(chapter.updatedAt)}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View className={styles.section}>
+          <View className={styles.sectionHeader}>
+            <View className={styles.sectionTitle}>
+              <Text>��</Text>
               <Text>催更互动</Text>
             </View>
           </View>

@@ -212,6 +212,18 @@
   color: $color-text-primary;
 }
 
+.filterClear {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  margin-left: 8rpx;
+  background: $color-bg-soft;
+  color: $color-primary;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
 .sortTabs {
   display: flex;
   gap: $spacing-xs;

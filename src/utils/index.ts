@@ -26,10 +26,10 @@ export const formatTimeAgo = (timestamp: number): string => {
   return target.format('MM-DD HH:mm');
 };
 
-export const formatInterval = (timestamp: number): string => {
-  const now = dayjs();
-  const target = dayjs(timestamp);
-  const diffHours = now.diff(target, 'hour');
+export const formatInterval = (fromTs: number, toTs?: number): string => {
+  const end = toTs ? dayjs(toTs) : dayjs();
+  const start = dayjs(fromTs);
+  const diffHours = Math.max(0, Math.abs(end.diff(start, 'hour')));
   const diffDays = Math.floor(diffHours / 24);
   const remainHours = diffHours % 24;
 

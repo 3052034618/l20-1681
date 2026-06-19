@@ -448,3 +448,124 @@
   color: $color-text-white;
   box-shadow: 0 6rpx 20rpx rgba(124, 58, 237, 0.3);
 }
+
+.timeline {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.timelineSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-md;
+}
+
+.timelineSummaryLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.timelineSummaryBadge {
+  padding: 4rpx 16rpx;
+  background: $color-bg-soft;
+  color: $color-primary;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.timelineItem {
+  position: relative;
+  padding-left: 40rpx;
+  padding-bottom: $spacing-lg;
+
+  &:last-child {
+    padding-bottom: 0;
+
+    .timelineLine {
+      display: none;
+    }
+  }
+}
+
+.timelineDot {
+  position: absolute;
+  left: 8rpx;
+  top: 10rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  box-shadow: 0 0 0 6rpx rgba(124, 58, 237, 0.12);
+
+  &.isLatest {
+    background: $color-success;
+    box-shadow: 0 0 0 6rpx rgba(16, 185, 129, 0.12);
+  }
+}
+
+.timelineLine {
+  position: absolute;
+  left: 17rpx;
+  top: 36rpx;
+  bottom: 0;
+  width: 2rpx;
+  background: $color-divider;
+}
+
+.timelineContent {
+  flex: 1;
+}
+
+.timelineTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.timelineChapter {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.timelineInterval {
+  flex-shrink: 0;
+  padding: 4rpx 14rpx;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+
+  &.isLatest {
+    background: rgba(16, 185, 129, 0.1);
+    color: $color-success;
+  }
+}
+
+.timelineMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.timelineWords {
+  color: $color-accent-dark;
+  font-weight: $font-weight-medium;
+}
+
