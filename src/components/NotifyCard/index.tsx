@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import type { NotifyItem } from '@/types';
-import { formatWords, formatNumber, formatTimeAgo } from '@/utils';
+import { formatWords, formatNumber, formatTimeAgo, openReadLink } from '@/utils';
 import { useAppStore } from '@/store';
 import styles from './index.module.scss';
 
@@ -15,13 +15,9 @@ const NotifyCard: React.FC<NotifyCardProps> = ({ notify }) => {
 
   const handleRead = (e: any) => {
     e.stopPropagation();
-    console.log('[NotifyCard] Jump to read:', notify.bookTitle);
+    console.log('[NotifyCard] Jump to read:', notify.bookTitle, notify.sourceUrl);
     markRead(notify.id);
-    Taro.showToast({
-      title: '正在跳转阅读...',
-      icon: 'none',
-      duration: 1500
-    });
+    openReadLink(notify.sourceUrl, notify.bookTitle);
   };
 
   const handleClick = () => {

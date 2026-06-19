@@ -9,7 +9,8 @@ import {
   formatWords,
   formatNumber,
   formatInterval,
-  getStatusText
+  getStatusText,
+  openReadLink
 } from '@/utils';
 import styles from './index.module.scss';
 
@@ -97,12 +98,8 @@ const DetailPage: React.FC = () => {
   };
 
   const handleRead = () => {
-    console.log('[DetailPage] read:', book.title);
-    Taro.showToast({
-      title: '正在跳转到阅读...',
-      icon: 'none',
-      duration: 1500
-    });
+    console.log('[DetailPage] read:', book.title, book.sourceUrl);
+    openReadLink(book.sourceUrl, book.title);
   };
 
   return (

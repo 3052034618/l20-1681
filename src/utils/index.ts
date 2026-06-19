@@ -1,7 +1,8 @@
+import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
-import type { BookStatus } from '@/types';
+import type { BookStatus, ReminderSetting } from '@/types';
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -84,4 +85,35 @@ export const formatNumber = (num: number): string => {
 
 export const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+};
+
+export const openReadLink = (sourceUrl: string, bookTitle: string) => {
+  if (!sourceUrl) {
+    Taro.showToast({ title: '暂无阅读链接', icon: 'none' });
+    return;
+  }
+  Taro.setClipboardData({
+    data: sourceUrl,
+    success: () => {
+      Taro.showModal({
+        title: '📖 去阅读',
+        content: `《${bookTitle}》的链接已复制到剪贴板，请打开阅读平台继续阅读`,
+        confirmText: '知道了',
+        showCancel: false
+      });
+    }
+  });
+};
+
+export const shouldShowNotify = (reminder: ReminderSetting, createdAt?: number): boolean => {
+  if (reminder.mode === 'never') return false;
+  if (reminder.onlyWeekend) {
+    const day = dayjs(createdAt || Date.now()).day();
+    if (day !== 0 && day !== 6) return false;
+  }
+  if (reminder.mode === 'weekend') {
+    const day = dayjs(createdAt || Date.now()).day();
+    if (day !== 0 && day !== 6) return false;
+  }
+  return true;
 };

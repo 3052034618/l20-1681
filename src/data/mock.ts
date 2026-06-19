@@ -387,13 +387,193 @@ export const mockUser: UserInfo = {
   totalReadingDays: 365
 };
 
+export const discoveryBooks: Book[] = [
+  {
+    id: 'd1',
+    title: '牧神记',
+    author: '宅猪',
+    cover: 'https://picsum.photos/id/250/300/400',
+    lastChapter: '第1456章 天下归一',
+    lastChapterAt: now - 1000 * 60 * 60 * 3,
+    lastChapterWords: 4680,
+    totalChapters: 1456,
+    totalWords: 6120000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 3),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d1',
+    tags: ['玄幻', '热血', '成长'],
+    description: '大墟的天黑得早，日落之后，不宜出门。秦牧在残老村长大，身边的老人们个个身怀绝技。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 9123,
+    subscribedAt: 0
+  },
+  {
+    id: 'd2',
+    title: '一念永恒',
+    author: '耳根',
+    cover: 'https://picsum.photos/id/251/300/400',
+    lastChapter: '第1389章 永恒之境',
+    lastChapterAt: now - 1000 * 60 * 60 * 48,
+    lastChapterWords: 5210,
+    totalChapters: 1389,
+    totalWords: 5890000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 48),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d2',
+    tags: ['仙侠', '修真', '热血'],
+    description: '一念成沧海，一念化桑田。一念斩千魔，一念诛万仙。唯我念……永恒。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 7856,
+    subscribedAt: 0
+  },
+  {
+    id: 'd3',
+    title: '元尊',
+    author: '天蚕土豆',
+    cover: 'https://picsum.photos/id/252/300/400',
+    lastChapter: '第1230章 苍穹之巅',
+    lastChapterAt: now - 1000 * 60 * 60 * 168,
+    lastChapterWords: 4890,
+    totalChapters: 1230,
+    totalWords: 4980000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 168),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d3',
+    tags: ['玄幻', '热血', '升级流'],
+    description: '天地为炉，万物为铜，阴阳为炭，造化为工。气运之争，蟒雀吞龙。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 14321,
+    subscribedAt: 0
+  },
+  {
+    id: 'd4',
+    title: '修真聊天群',
+    author: '圣骑士的传说',
+    cover: 'https://picsum.photos/id/256/300/400',
+    lastChapter: '第2890章 群主大能',
+    lastChapterAt: now - 1000 * 60 * 60 * 4,
+    lastChapterWords: 3450,
+    totalChapters: 2890,
+    totalWords: 8200000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 4),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d4',
+    tags: ['都市', '修真', '搞笑'],
+    description: '某天，宋书航意外加入了一个仙侠中二病资深患者的交流群，发现里面全是修真者。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 6543,
+    subscribedAt: 0
+  },
+  {
+    id: 'd5',
+    title: '我的模拟长生路',
+    author: '愤怒的香蕉',
+    cover: 'https://picsum.photos/id/259/300/400',
+    lastChapter: '第678章 模拟结束',
+    lastChapterAt: now - 1000 * 60 * 60 * 72,
+    lastChapterWords: 4120,
+    totalChapters: 678,
+    totalWords: 2890000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 72),
+    source: '番茄小说',
+    sourceUrl: 'https://fanqienovel.com/page/d5',
+    tags: ['模拟', '修真', '脑洞'],
+    description: '一次意外，方源获得了长生模拟器，可以模拟自己的人生，死亡后回溯重来。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 3210,
+    subscribedAt: 0
+  },
+  {
+    id: 'd6',
+    title: '宿命之环',
+    author: '爱潜水的乌贼',
+    cover: 'https://picsum.photos/id/263/300/400',
+    lastChapter: '第345章 暗流涌动',
+    lastChapterAt: now - 1000 * 60 * 60 * 6,
+    lastChapterWords: 5670,
+    totalChapters: 345,
+    totalWords: 1560000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 6),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d6',
+    tags: ['克苏鲁', '蒸汽朋克', '悬疑'],
+    description: '诡秘之主续作，世界并未因格尔曼的消失而归于平静，新的危机正在酝酿。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 12890,
+    subscribedAt: 0
+  },
+  {
+    id: 'd7',
+    title: '长夜余火',
+    author: '爱潜水的乌贼',
+    cover: 'https://picsum.photos/id/266/300/400',
+    lastChapter: '第890章 余烬复燃',
+    lastChapterAt: now - 1000 * 60 * 30,
+    lastChapterWords: 3980,
+    totalChapters: 890,
+    totalWords: 3890000,
+    status: getBookStatus(now - 1000 * 60 * 30),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d7',
+    tags: ['末日', '悬疑', '热血'],
+    description: '当长夜降临，火种熄灭。人类在废墟中重建文明，却不知黑暗中潜伏着怎样的恐怖。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 4567,
+    subscribedAt: 0
+  },
+  {
+    id: 'd8',
+    title: '深海余烬',
+    author: '远瞳',
+    cover: 'https://picsum.photos/id/269/300/400',
+    lastChapter: '第567章 深渊之下',
+    lastChapterAt: now - 1000 * 60 * 60 * 12,
+    lastChapterWords: 5340,
+    totalChapters: 567,
+    totalWords: 2340000,
+    status: getBookStatus(now - 1000 * 60 * 60 * 12),
+    source: '起点中文网',
+    sourceUrl: 'https://qidian.com/book/d8',
+    tags: ['科幻', '冒险', '悬疑'],
+    description: '在被深海吞没的世界里，旧文明的残骸散布在各个岛屿上，等待被发掘。',
+    reminder: { mode: 'hours', thresholdHours: 24, onlyWeekend: false },
+    urgeCount: 2890,
+    subscribedAt: 0
+  }
+];
+
+const urlPatternMap: Record<string, string> = {
+  'qidian.com': '起点中文网',
+  'fanqienovel.com': '番茄小说',
+  'jjwxc.net': '晋江文学城',
+  'zongheng.com': '纵横中文网',
+  '17k.com': '17K小说网'
+};
+
+export const matchBookFromUrl = (url: string): Book | null => {
+  let matchedSource = '';
+  for (const [domain, source] of Object.entries(urlPatternMap)) {
+    if (url.includes(domain)) {
+      matchedSource = source;
+      break;
+    }
+  }
+  if (!matchedSource) return null;
+  const pool = [...mockBooks, ...discoveryBooks];
+  const matched = pool.filter((b) => b.source === matchedSource);
+  if (matched.length === 0) return null;
+  return matched[Math.floor(Math.random() * matched.length)];
+};
+
+export const allSearchableBooks: Book[] = [...mockBooks, ...discoveryBooks];
+
 export const searchSuggestions: string[] = [
   '剑来',
   '诡秘之主',
-  '凡人修仙',
+  '牧神记',
   '天蚕土豆',
   '猫腻',
   '爱潜水的乌贼',
-  '烽火戏诸侯',
-  '辰东'
+  '宿命之环',
+  '深海余烬'
 ];

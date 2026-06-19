@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import classnames from 'classnames';
-import type { NotifyItem } from '@/types';
+import type { NotifyItem, Book } from '@/types';
 import { useAppStore } from '@/store';
+import { shouldShowNotify } from '@/utils';
 import NotifyCard from '@/components/NotifyCard';
 import styles from './index.module.scss';
 
@@ -11,23 +12,38 @@ type FilterType = 'all' | 'unread' | 'urge';
 
 const NotifyPage: React.FC = () => {
   const notifies = useAppStore((s) => s.notifies);
+  const books = useAppStore((s) => s.books);
   const markAllRead = useAppStore((s) => s.markAllNotifyRead);
 
   const [filter, setFilter] = useState<FilterType>('all');
 
+  const bookReminderMap = useMemo(() => {
+    const map: Record<string, Book['reminder']> = {};
+    books.forEach((b) => { map[b.id] = b.reminder; });
+    return map;
+  }, [books]);
+
+  const visibleNotifies = useMemo(() => {
+    return notifies.filter((n) => {
+      const reminder = bookReminderMap[n.bookId];
+      if (!reminder) return true;
+      return shouldShowNotify(reminder, n.createdAt);
+    });
+  }, [notifies, bookReminderMap]);
+
   const unreadCount = useMemo(
-    () => notifies.filter((n) => !n.read).length,
-    [notifies]
+    () => visibleNotifies.filter((n) => !n.read).length,
+    [visibleNotifies]
   );
 
   const urgeSuccessCount = useMemo(
-    () => notifies.filter((n) => n.urgeReached).length,
-    [notifies]
+    () => visibleNotifies.filter((n) => n.urgeReached).length,
+    [visibleNotifies]
   );
 
   const todayUpdateCount = useMemo(() => {
     const today = new Date();
-    return notifies.filter((n) => {
+    return visibleNotifies.filter((n) => {
       const d = new Date(n.createdAt);
       return (
         d.getFullYear() === today.getFullYear() &&
@@ -35,22 +51,21 @@ const NotifyPage: React.FC = () => {
         d.getDate() === today.getDate()
       );
     }).length;
-  }, [notifies]);
+  }, [visibleNotifies]);
 
   const filteredNotifies = useMemo(() => {
     let list: NotifyItem[] = [];
     if (filter === 'all') {
-      list = notifies;
+      list = visibleNotifies;
     } else if (filter === 'unread') {
-      list = notifies.filter((n) => !n.read);
+      list = visibleNotifies.filter((n) => !n.read);
     } else {
-      list = notifies.filter((n) => n.urgeReached);
+      list = visibleNotifies.filter((n) => n.urgeReached);
     }
     return list;
-  }, [notifies, filter]);
+  }, [visibleNotifies, filter]);
 
   usePullDownRefresh(() => {
-    console.log('[NotifyPage] pullDownRefresh');
     setTimeout(() => {
       Taro.stopPullDownRefresh();
       Taro.showToast({ title: '刷新成功', icon: 'success' });
@@ -59,7 +74,6 @@ const NotifyPage: React.FC = () => {
 
   const handleMarkAll = () => {
     if (unreadCount === 0) return;
-    console.log('[NotifyPage] markAllRead');
     markAllRead();
     Taro.showToast({ title: '已全部标记为已读', icon: 'success' });
   };
@@ -90,7 +104,7 @@ const NotifyPage: React.FC = () => {
 
         <View className={styles.statsCard}>
           <View className={styles.statCol}>
-            <Text className={styles.statValue}>{todayUpdateCount || notifies.length}</Text>
+            <Text className={styles.statValue}>{todayUpdateCount || visibleNotifies.length}</Text>
             <Text className={styles.statLabel}>今日更新</Text>
           </View>
           <View className={styles.statCol}>
